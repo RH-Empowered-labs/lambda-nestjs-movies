@@ -1,10 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom, map } from 'rxjs';
-import { response } from 'express';
-
-import { CreateMovieDTO } from 'src/movies/dtos/movies-dto';
 
 const axios = require('axios').default;
 
@@ -23,7 +18,6 @@ export class ApiService {
     private readonly logger = new Logger(ApiService.name);
 
     constructor(
-        private httpService: HttpService,
         private configService: ConfigService
     ) {
         // get strings of variables
@@ -38,7 +32,30 @@ export class ApiService {
 
     async moviePopular(page: string): Promise<any> {
         const apiUrl = this.apiCompleteURL + '/movie/popular' + this.apiKeyString + '&page=' + page
-        const { data } = await axios.get(apiUrl);
-        return data;
+        try {
+            const { data } = await axios.get(apiUrl);
+            return data;
+        } catch (error) {
+            this.logger.error({
+                Title: 'Error API get service',
+                Error: `[${error.message}]`
+            });
+            return error
+        }
+    }
+
+    async findById(id: string): Promise<any> {
+        const apiUrl = this.apiCompleteURL + '/movie/' + id + this.apiKeyString
+        console.log(apiUrl);
+        try {
+            const { data } = await axios.get(apiUrl);
+            return data;
+        } catch (error) {
+            this.logger.error({
+                Title: 'Error API get service',
+                Error: `[${error.message}]`
+            });
+            return error
+        }
     }
 }

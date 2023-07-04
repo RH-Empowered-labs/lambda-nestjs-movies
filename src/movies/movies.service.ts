@@ -10,8 +10,18 @@ export class MoviesService {
         private apiService: ApiService,
     ) {}
 
-    findPopular(page: string): any {
-        let movies = this.apiService.moviePopular(page);
+    async findPopular(page: string): Promise<any> {
+        let movies = await this.apiService.moviePopular(page);
         return movies;
+    }
+
+    async findDetailsById(id: string): Promise <any> {
+        let movieDetails = await this.apiService.findById(id);
+        console.log(movieDetails);
+        return movieDetails;
+    }
+
+    async createFavoriteMovie(movieId: string, userId: string): Promise<any>{
+
     }
 }
