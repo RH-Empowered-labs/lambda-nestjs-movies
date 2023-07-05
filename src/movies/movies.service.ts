@@ -116,14 +116,63 @@ export class MoviesService {
         }
     }
 
+    async updateMovieNote(movieId: string, userId: string, movieNoteBody: movieNoteBodyDTO): Promise<any> {
+        const movieKey = {
+            PK: `#MOVIE#${movieId}`,
+            SK: '#MOVIE#META',
+        }
+
+        const noteKey = {
+            PK: `#USER#${userId}`,
+            SK: `#MOVIENOTE#${movieId}`,
+        }
+
+        try {
+            
+            let movieFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, movieKey);
+            let movieNoteFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, noteKey);
+
+            const noteItem = {
+                PK: `#USER#${userId}`,
+                SK: `#MOVIENOTE#${movieId}`,
+                noteTitle: movieNoteBody.noteTitle,
+                description: movieNoteBody.description
+            }
+
+            await this.dynamoService.putItem(this.dynamoDBTableName, noteItem);
+            
+            movieNoteFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, noteKey);
+
+            return {
+                movie: {...movieFromDb},
+                note: {...movieNoteFromDb}
+            }
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(error);
+        }
+    }
+
     async getFavoriteMovie(movieId: string, userId: string): Promise<any> {
         const movieKey = {
             PK: `#MOVIE#${movieId}`,
             SK: '#MOVIE#META',
         }
 
-        try {
+        const noteKey = {
+            PK: `#USER#${userId}`,
+            SK: `#MOVIENOTE#${movieId}`,
+        }
 
+        try {
+            
+            const movieFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, movieKey);
+            const movieNoteFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, noteKey);
+            
+            return {
+                movie: {...movieFromDb},
+                note: {...movieNoteFromDb}
+            }
         } catch (error) {
             console.log(error);
             throw new InternalServerErrorException(error);
@@ -152,10 +201,8 @@ export class MoviesService {
                 PK: `#MOVIE#${id}`,
                 SK: '#MOVIE#META',
             }));
-            
-            const moviesResponse = await this.dynamoService.batchGetItems(this.dynamoDBTableName, movieKeys);
 
-            return moviesResponse
+            return await this.dynamoService.batchGetItems(this.dynamoDBTableName, movieKeys);
         } catch (error) {
             console.log(error);
             throw new InternalServerErrorException(error);
