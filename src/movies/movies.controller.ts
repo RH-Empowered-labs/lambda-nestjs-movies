@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { MoviesService } from './movies.service'
 import { JwtAuthGuard } from '../auth/auth.guard';
+import { movieNoteBodyDTO } from './dtos/movies-dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -27,10 +28,15 @@ export class MoviesController {
     @UseGuards(JwtAuthGuard)
     @Post('/favorite/:id?')
     async createFavoriteMovie(
+        @Body() movieNoteBody: movieNoteBodyDTO,
         @Param('id') id: string, 
-        @Req() req
+        @Req() req,
     ): Promise<any> {
-        const movie = await this.moviesService.createFavoriteMovie(id, req.user.id);
+        const movie = await this.moviesService.createFavoriteMovie(
+            id, 
+            req.user.id,
+            movieNoteBody
+        );
         console.log(movie);
         return movie
     }

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiService } from 'src/api/api.service';
 import { DynamodbModule } from 'src/dynamodb/dynamodb.module';
 import { DynamodbService } from 'src/dynamodb/dynamodb.service';
-import { CreateMovieDTO, createMovieNoteDTO } from './dtos/movies-dto';
+import { CreateFavoriteMovieDTO, CreateMovieDTO, createMovieNoteDTO, movieNoteBodyDTO } from './dtos/movies-dto';
 
 @Injectable()
 export class MoviesService {
@@ -28,7 +28,7 @@ export class MoviesService {
         return movieDetails;
     }
 
-    async createFavoriteMovie(movieId: string, userId: string): Promise<any> {
+    async createFavoriteMovie(movieId: string, userId: string, movieNoteBody: movieNoteBodyDTO): Promise<any> {
         const movieKey = {
             'PK': '#MOVIE#META',
             'SK': `#MOVIE#ID#${movieId}`
@@ -42,8 +42,8 @@ export class MoviesService {
                 let movieDetails = await this.apiService.findById(movieId);
 
                 const movieItem: CreateMovieDTO = {
-                    PK: '#MOVIE#META',
-                    SK: `#MOVIE#ID#${movieDetails.id}`,
+                    PK: `#MOVIE#${movieDetails.id}`,
+                    SK: '#MOVIE#META',
                     movieId: movieDetails.id,
                     movieImDbId: movieDetails.imdb_id,
                     language: movieDetails.original_language,
@@ -59,17 +59,54 @@ export class MoviesService {
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                 }
-
-                console.log('creando pelicula');
+                
                 await this.dynamoService.putItem(this.dynamoDBTableName, movieItem);
-                const existMovie = await this.dynamoService.getItemByKey(this.dynamoDBTableName, movieKey);
-                return existMovie;
             }
 
-            console.log('devolviendo pelicula existente en db');
-            return await this.dynamoService.getItemByKey(this.dynamoDBTableName, movieKey);
+            const existFavorite = await this.getFavoriteMovieExistByMovieIdAndUserId(userId, movieId);
+            
 
+            if(!existFavorite) {
+                const favoriteMovieItem: CreateFavoriteMovieDTO = {
+                    PK: `#USER#${userId}`,
+                    SK: `#FAVORITEMOVIE#${movieId}`,
+                    userId: userId,
+                    movieId: movieId,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                }
 
+                await this.dynamoService.putItem(this.dynamoDBTableName, favoriteMovieItem);
+            }
+
+            const noteKey = {
+                PK: `#USER#${userId}`,
+                SK: `#MOVIENOTE#${movieId}`,
+            }
+
+            const existNote = await this.getMovieNoteExistByMovieIdAndUserId(movieId, userId);
+
+            if(!existNote){
+                const noteItem = {
+                    PK: `#USER#${userId}`,
+                    SK: `#MOVIENOTE#${movieId}`,
+                    userId: userId,
+                    movieId: movieId,
+                    noteTitle: movieNoteBody.noteTitle,
+                    description: movieNoteBody.description,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                }
+
+                await this.dynamoService.putItem(this.dynamoDBTableName, noteItem);
+            }
+
+            const movieFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, movieKey);
+
+            return {
+                ...movieFromDb,
+
+            }
 
         } catch (error) {
             console.log(error);
@@ -80,14 +117,62 @@ export class MoviesService {
 
     private async getMovieExistByMovieId(id: string): Promise<boolean | Error> {
         const key = {
-            'PK': '#MOVIE#META',
-            'SK': `#MOVIE#ID#${id}`
+            'PK': `#MOVIE#${id}`,
+            'SK': '#MOVIE#META',
         }
 
         try {
             const movieFinder = await this.dynamoService.getItemByKey(this.dynamoDBTableName, key);
 
             if (!movieFinder) {
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(error);
+        }
+
+    }
+
+    private async getFavoriteMovieExistByMovieIdAndUserId(
+        movieId: string, 
+        userId: string
+    ): Promise<boolean | Error> {
+        const key = {
+            'PK': `#USER#${userId}`,
+            'SK': `#FAVORITEMOVIE#${movieId}`,
+        }
+
+        try {
+            const favoriteMovieFinder = await this.dynamoService.getItemByKey(this.dynamoDBTableName, key);
+
+            if (!favoriteMovieFinder) {
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(error);
+        }
+
+    }
+
+    private async getMovieNoteExistByMovieIdAndUserId(
+        movieId: string, 
+        userId: string
+    ): Promise<boolean | Error> {
+        const key = {
+            'PK': `#USER#${userId}`,
+            'SK': `#MOVIENOTE#${movieId}`,
+        }
+
+        try {
+            const movieNoteFinder = await this.dynamoService.getItemByKey(this.dynamoDBTableName, key);
+
+            if (!movieNoteFinder) {
                 return false;
             }
 

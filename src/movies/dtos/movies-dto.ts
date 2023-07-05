@@ -18,13 +18,8 @@ export interface CreateMovieDTO {
 }
 
 export interface CreateFavoriteMovieDTO {
-    userId: string;
-    movieId: string;
-    updatedAt: string | Date;
-    createdAt: string | Date;
-}
-
-export interface CreateFavoriteMovieDTO {
+    PK: string;
+    SK: string;
     userId: string;
     movieId: string;
     updatedAt: string | Date;
@@ -32,12 +27,19 @@ export interface CreateFavoriteMovieDTO {
 }
 
 export interface createMovieNoteDTO {
+    PK: string;
+    SK: string;
     userId: string;
     movieId: string;
     noteTitle: string;
     description: string;
     updatedAt: string | Date;
     createdAt: string | Date;
+}
+
+export interface movieNoteBodyDTO {
+    noteTitle: string;
+    description: string;
 }
 
 export interface APIGenders {
