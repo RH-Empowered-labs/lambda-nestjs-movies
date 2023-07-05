@@ -3,10 +3,13 @@ import { MoviesController } from './movies.controller';
 import { MoviesService } from './movies.service';
 import { ApiModule } from '../api/api.module';
 import { JwtStrategy } from '../auth/jwt.strategy';
-import { JwtModule } from '@nestjs/jwt';
+import { DynamodbModule } from 'src/dynamodb/dynamodb.module';
 
 @Module({
-    imports: [ApiModule],
+    imports: [
+        ApiModule,
+        DynamodbModule
+    ],
     controllers: [MoviesController],
     providers: [MoviesService, JwtStrategy]
 })

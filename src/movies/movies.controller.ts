@@ -26,11 +26,12 @@ export class MoviesController {
     
     @UseGuards(JwtAuthGuard)
     @Post('/favorite/:id?')
-    createFavoriteMovie(
+    async createFavoriteMovie(
         @Param('id') id: string, 
         @Req() req
     ): Promise<any> {
-        console.log(req.user);
-        return this.moviesService.createFavoriteMovie(id, '1');
+        const movie = await this.moviesService.createFavoriteMovie(id, req.user.id);
+        console.log(movie);
+        return movie
     }
 }

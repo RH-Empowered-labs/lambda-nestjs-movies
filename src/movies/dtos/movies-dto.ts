@@ -1,5 +1,6 @@
 export interface CreateMovieDTO {
-    movieApiId: string;
+    PK: string;
+    SK: string;
     movieId: string;
     movieImDbId: string;
     language: string;
@@ -9,9 +10,34 @@ export interface CreateMovieDTO {
     popularity: number;
     posterPath: string;
     releaseDate: string;
-    video: string;
+    video: string | boolean;
     voteAverage: number;
     voteCount: number;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+}
+
+export interface CreateFavoriteMovieDTO {
+    userId: string;
+    movieId: string;
+    updatedAt: string | Date;
+    createdAt: string | Date;
+}
+
+export interface CreateFavoriteMovieDTO {
+    userId: string;
+    movieId: string;
+    updatedAt: string | Date;
+    createdAt: string | Date;
+}
+
+export interface createMovieNoteDTO {
+    userId: string;
+    movieId: string;
+    noteTitle: string;
+    description: string;
+    updatedAt: string | Date;
+    createdAt: string | Date;
 }
 
 export interface APIGenders {
