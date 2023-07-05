@@ -46,7 +46,6 @@ export class ApiService {
 
     async findById(id: string): Promise<any> {
         const apiUrl = this.apiCompleteURL + '/movie/' + id + this.apiKeyString
-        console.log(apiUrl);
         try {
             const { data } = await axios.get(apiUrl);
             return data;

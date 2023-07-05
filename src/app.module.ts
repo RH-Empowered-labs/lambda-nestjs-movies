@@ -5,6 +5,7 @@ import { ApiModule } from './api/api.module';
 import { MoviesModule } from './movies/movies.module';
 import { DynamodbModule } from './dynamodb/dynamodb.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     ApiModule,
     MoviesModule,
-    DynamodbModule
+    DynamodbModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

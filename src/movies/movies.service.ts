@@ -17,7 +17,6 @@ export class MoviesService {
 
     async findDetailsById(id: string): Promise <any> {
         let movieDetails = await this.apiService.findById(id);
-        console.log(movieDetails);
         return movieDetails;
     }
 
