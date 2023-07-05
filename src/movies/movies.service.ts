@@ -30,8 +30,8 @@ export class MoviesService {
 
     async createFavoriteMovie(movieId: string, userId: string, movieNoteBody: movieNoteBodyDTO): Promise<any> {
         const movieKey = {
-            'PK': '#MOVIE#META',
-            'SK': `#MOVIE#ID#${movieId}`
+            PK: `#MOVIE#${movieId}`,
+            SK: '#MOVIE#META',
         }
 
         try {
@@ -102,10 +102,12 @@ export class MoviesService {
             }
 
             const movieFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, movieKey);
+            console.log(movieFromDb);
+            const movieNoteFromDb = await this.dynamoService.getItemByKey(this.dynamoDBTableName, noteKey);
 
             return {
-                ...movieFromDb,
-
+                movie: {...movieFromDb},
+                note: {...movieNoteFromDb}
             }
 
         } catch (error) {
@@ -114,7 +116,53 @@ export class MoviesService {
         }
     }
 
+    async getFavoriteMovie(movieId: string, userId: string): Promise<any> {
+        const movieKey = {
+            PK: `#MOVIE#${movieId}`,
+            SK: '#MOVIE#META',
+        }
 
+        try {
+
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(error);
+        }
+    }
+
+    async getFavoriteMovies(userId: string, limit: number): Promise<any> {
+        let startKey: undefined | any;
+
+        const favoriteFilter = {
+            PK: `#USER#${userId}`,
+            SK: `#FAVORITEMOVIE#`,
+        }
+
+
+        try {
+            const favoriteMovies: any = await this.dynamoService.queryItemsByPKAndSK(this.dynamoDBTableName, limit, favoriteFilter.PK, favoriteFilter.SK);
+            
+            if(favoriteMovies.items.length <= 0){
+                return [];
+            }
+
+            const movieIds = favoriteMovies.items.map(item => item.movieId);
+            
+            const movieKeys = movieIds.map(id => ({
+                PK: `#MOVIE#${id}`,
+                SK: '#MOVIE#META',
+            }));
+            
+            const moviesResponse = await this.dynamoService.batchGetItems(this.dynamoDBTableName, movieKeys);
+
+            return moviesResponse
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(error);
+        }
+    }
+
+    // internal functions
     private async getMovieExistByMovieId(id: string): Promise<boolean | Error> {
         const key = {
             'PK': `#MOVIE#${id}`,
@@ -181,6 +229,5 @@ export class MoviesService {
             console.log(error);
             throw new InternalServerErrorException(error);
         }
-
     }
 }

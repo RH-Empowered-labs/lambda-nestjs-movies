@@ -40,4 +40,30 @@ export class MoviesController {
         console.log(movie);
         return movie
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/favorite/:id?')
+    async getFavoriteMovie(
+        @Param('id') id: string, 
+        @Req() req,
+    ): Promise<any> {
+        const movie = await this.moviesService.getFavoriteMovie(
+            id, 
+            req.user.id
+        );
+        console.log(movie);
+        return movie
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/favorites')
+    async getFavoriteMovies(
+        @Req() req,
+    ): Promise<any> {
+        const limit = 10;
+        return await this.moviesService.getFavoriteMovies(
+            req.user.id,
+            limit
+        );
+    }
 }

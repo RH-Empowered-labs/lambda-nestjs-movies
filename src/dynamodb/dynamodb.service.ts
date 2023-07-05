@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DynamoDBConfigDto } from './dto/dynamodb-config-dto';
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand, GetCommandInput, PutCommand, PutCommandOutput, ScanCommand, ScanCommandOutput, QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { DynamoDB, QueryCommandInput } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, GetCommandInput, PutCommand, PutCommandOutput, ScanCommand, ScanCommandOutput, QueryCommand, QueryCommandOutput, BatchGetCommandInput, BatchGetCommand } from "@aws-sdk/lib-dynamodb";
 import { ScanCommandInput, AttributeValue, GetItemOutput } from '@aws-sdk/client-dynamodb';
 
 @Injectable()
@@ -39,6 +39,82 @@ export class DynamodbService {
         } catch (error) {
             this.logger.error({
                 Title: 'Error put item',
+                Error: `[${error.message}]`
+            });
+            return error;
+        }
+    }
+
+    async queryItemsByPK(tableName: string, limit: number, pk: string, startKey?: any): Promise<{ items: any[], lastKey?: Record<string, AttributeValue> } | ScanCommandOutput | Error> {
+        
+        const params = {
+            TableName: tableName,
+            KeyConditionExpression: 'PK = :pk',
+            ExpressionAttributeValues: {
+                ':pk': pk,
+            },
+            Limit: limit,
+            ExclusiveStartKey: startKey
+        }
+    
+        try {
+            const response = await this.dynamoDBDocumentClient.send(new QueryCommand(params));
+            return {
+                items: response.Items,
+                lastKey: response.LastEvaluatedKey
+            };
+        } catch (error) {
+            this.logger.error({
+                Title: 'Error query items',
+                Error: `[${error.message}]`
+            });
+            return error;
+        }
+    }
+
+    async queryItemsByPKAndSK(tableName: string, limit: number, pk: string, sk: string, startKey?: any): Promise<{ items: any[], lastKey?: Record<string, AttributeValue> } | ScanCommandOutput | Error> {
+        
+        const params = {
+            TableName: tableName,
+            KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+            ExpressionAttributeValues: {
+                ':pk': pk,
+                ':sk': sk,
+            },
+            Limit: limit,
+            ExclusiveStartKey: startKey
+        }
+    
+        try {
+            const response = await this.dynamoDBDocumentClient.send(new QueryCommand(params));
+            return {
+                items: response.Items,
+                lastKey: response.LastEvaluatedKey
+            };
+        } catch (error) {
+            this.logger.error({
+                Title: 'Error query items',
+                Error: `[${error.message}]`
+            });
+            return error;
+        }
+    }
+
+    async batchGetItems(tableName: string, keys: any[any]){
+        const params: BatchGetCommandInput = {
+            RequestItems: {
+                [tableName]: {
+                    Keys: keys,
+                },
+            },
+        };
+
+        try {
+            const response = await this.dynamoDBDocumentClient.send(new BatchGetCommand(params));
+            return response.Responses[tableName];
+        } catch (error) {
+            this.logger.error({
+                Title: 'Error scan items',
                 Error: `[${error.message}]`
             });
             return error;
