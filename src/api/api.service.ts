@@ -32,6 +32,7 @@ export class ApiService {
 
     async moviePopular(page: string): Promise<any> {
         const apiUrl = this.apiCompleteURL + '/movie/popular' + this.apiKeyString + '&page=' + page
+        console.log(apiUrl);
         try {
             const { data } = await axios.get(apiUrl);
             return data;

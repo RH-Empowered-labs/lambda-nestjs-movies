@@ -1,0 +1,33 @@
+service: movies-serverless-function
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-jetpack
+  - serverless-offline
+
+custom:
+  memorySize:
+    dev: 128
+    prod: 1024
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  memorySize: ${self:custom.memorySize.${self:provider.stage}, 256} # default to 256 if not specified
+  region: us-east-1
+  # timeout: 10
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
