@@ -13,6 +13,7 @@ phases:
       - aws configure set aws_secret_access_key $AWS_CREDENTIALS_SECRET_KEY
       - aws configure set default.region $AWS_DEFAULT_REGION
       - aws configure set default.max_payload_size 104857600
+      - sam --version
       - echo Verify and update handler
       - ./scripts/lambda-handler.sh
   build:
@@ -21,7 +22,7 @@ phases:
   post_build:
     commands:
       - echo Remove scripts from code
-      - rm -rf scripts test .git
+      - rm -rf scripts .git
       - echo Creating package of code
       - zip -r package.zip .
       - echo Updating function code in AWS Lambda...

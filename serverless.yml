@@ -20,7 +20,7 @@ provider:
   # timeout: 10
 
 functions:
-  api:
+  movies:
     handler: dist/lambda.handler
     events:
       - http:
