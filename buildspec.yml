@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm install --production
+      - npm install
   pre_build:
     commands:
       - echo Configure AWS CLI...
@@ -21,10 +21,4 @@ phases:
       - npm run build
   post_build:
     commands:
-      - echo Remove scripts from code
-      - rm -rf scripts .git
-      - echo Creating package of code
-      - zip -r package.zip .
-      - echo Updating function code in AWS Lambda...
-      - FUNCTION_NAME=$(aws ssm get-parameter --name "/lambda/MoviesFunctionArn" --query "Parameter.Value" --output text | awk -F'[:/]' '{print $NF}')
-      - aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://package.zip
+      - ./scripts/lambda-package.sh
