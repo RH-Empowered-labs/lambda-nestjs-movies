@@ -18,7 +18,6 @@ function listAllFiles(dirPath) {
     });
 }
 
-
 listAllFiles(__dirname);
 
 
