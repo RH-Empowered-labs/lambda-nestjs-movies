@@ -1,26 +1,25 @@
-function listAllFiles() {
+function listAllFiles(dirPath) {
     
     //requiring path and fs modules
     const path = require('path');
     const fs = require('fs');
-    //joining path of directory 
-    const directoryPath = __dirname;
-    //passsing directoryPath and callback function
-    fs.readdir(directoryPath, function (err, files) {
-        //handling error
-        if (err) {
-            return console.log('Unable to scan directory: ' + err);
-        } 
-        //listing all files using forEach
-        files.forEach(function (file) {
-            // Do whatever you want to do with the file
-            console.log(file); 
-        });
+    let files = fs.readdirSync(dirPath);
+
+    files.forEach(file => {
+        let fullPath = path.join(dirPath, file);
+
+        if (fs.statSync(fullPath).isDirectory()) {
+            // Si es un directorio, recursivamente listar los archivos dentro de este
+            listAllFiles(fullPath);
+        } else {
+            // Si es un archivo, imprimir el nombre del archivo
+            console.log(fullPath);
+        }
     });
 }
 
 
-listAllFiles();
+listAllFiles(__dirname);
 
 
 import { NestFactory } from '@nestjs/core';

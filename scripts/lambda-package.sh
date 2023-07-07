@@ -14,7 +14,7 @@ npm install --production
 mv node_modules nodejs-layer/
 
 # Crea un archivo ZIP del directorio 'nodejs'
-zip -r -9 nodejs-layer.zip nodejs-layer
+zip -r -9 nodejs-layer.zip nodejs-layer > /dev/null
 
 # Package node_modules as a layer
 # echo Creating layer of dependencies
@@ -32,7 +32,7 @@ rm -rf node_modules nodejs-layer
 
 # Package of code
 echo Creating package of code
-zip -r -9 package-$randomCodeVersion.zip .
+zip -r -9 package-$randomCodeVersion.zip . > /dev/null
 
 # Upload to S3
 echo Upload file to s3
