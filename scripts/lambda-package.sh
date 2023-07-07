@@ -6,6 +6,10 @@ FUNCTION_NAME=$(aws ssm get-parameter --name "/lambda/MoviesFunctionArn" --query
 # Crea un nuevo directorio llamado 'nodejs'
 mkdir nodejs-layer
 
+rm -rf node_modules
+
+npm install --production
+
 # Mueve la carpeta 'node_modules' al directorio 'nodejs'
 mv node_modules nodejs-layer/
 
