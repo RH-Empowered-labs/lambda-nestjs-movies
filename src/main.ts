@@ -1,15 +1,3 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-
-import { SecretsManagerInternal } from './utils/secretsManager';
-import { JWTConfigDTO, RemoteApiConfigDTO } from './utils/dtos/secretsDTO';
-import { ParameterStoreInternal } from './utils/parameterStore';
-
-import { ExpressAdapter } from '@nestjs/platform-express';
-import { Handler, Context } from 'aws-lambda';
-import * as serverlessExpress from 'aws-serverless-express';
-import * as express from 'express';
-
 function listAllFiles() {
     
     //requiring path and fs modules
@@ -30,6 +18,23 @@ function listAllFiles() {
         });
     });
 }
+
+
+listAllFiles();
+
+
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+import { SecretsManagerInternal } from './utils/secretsManager';
+import { JWTConfigDTO, RemoteApiConfigDTO } from './utils/dtos/secretsDTO';
+import { ParameterStoreInternal } from './utils/parameterStore';
+
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { Handler, Context } from 'aws-lambda';
+import * as serverlessExpress from 'aws-serverless-express';
+import * as express from 'express';
+
 
 require('dotenv').config();
 
@@ -100,7 +105,6 @@ if (process.env.NODE_ENV == 'local'){
 }
 
 export const handler: Handler = async (event: any, context: Context) => {
-    listAllFiles();
     const server = await bootstrap();
     return serverlessExpress.proxy(server, event, context, 'PROMISE').promise;
 };
