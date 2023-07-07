@@ -19,8 +19,8 @@ export class DynamodbService {
         this.dynamoDBConfiguration = {
             region: this.configService.get<string>('AWS_REGION'),
             credentials: {
-                accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
-                secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
+                accessKeyId: this.configService.get<string>('AWS_CREDENTIALS_ACCESS_KEY'),
+                secretAccessKey: this.configService.get<string>('AWS_CREDENTIALS_SECRET_KEY'),
             }
         }
 

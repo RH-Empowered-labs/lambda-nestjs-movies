@@ -38,14 +38,14 @@ require('dotenv').config();
 
 const secretFinder = new SecretsManagerInternal(
     process.env.AWS_REGION,
-    process.env.AWS_ACCESS_KEY_ID,
-    process.env.AWS_SECRET_ACCESS_KEY,
+    process.env.AWS_CREDENTIALS_ACCESS_KEY,
+    process.env.AWS_CREDENTIALS_SECRET_KEY,
 );
 
 const parametersFinder = new ParameterStoreInternal(
     process.env.AWS_REGION,
-    process.env.AWS_ACCESS_KEY_ID,
-    process.env.AWS_SECRET_ACCESS_KEY,
+    process.env.AWS_CREDENTIALS_ACCESS_KEY,
+    process.env.AWS_CREDENTIALS_SECRET_KEY,
 );
 
 const setCredentialsToEnv = async () => {
