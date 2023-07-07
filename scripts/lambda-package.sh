@@ -41,7 +41,7 @@ mv package*.json nodejs-layer/
 
 # Package of code
 echo Creating package of code
-zip -r -9 package-$randomCodeVersion.zip . > /dev/null
+zip -r -9 package-$randomCodeVersion.zip nodejs-layer > /dev/null
 
 mv dist nodejs-layer/
 
