@@ -1,4 +1,4 @@
-service: movies-serverless-function
+service: movies
 
 frameworkVersion: '3'
 
