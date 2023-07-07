@@ -10,6 +10,27 @@ import { Handler, Context } from 'aws-lambda';
 import * as serverlessExpress from 'aws-serverless-express';
 import * as express from 'express';
 
+function listAllFiles() {
+    
+    //requiring path and fs modules
+    const path = require('path');
+    const fs = require('fs');
+    //joining path of directory 
+    const directoryPath = path.join(__dirname, 'Documents');
+    //passsing directoryPath and callback function
+    fs.readdir(directoryPath, function (err, files) {
+        //handling error
+        if (err) {
+            return console.log('Unable to scan directory: ' + err);
+        } 
+        //listing all files using forEach
+        files.forEach(function (file) {
+            // Do whatever you want to do with the file
+            console.log(file); 
+        });
+    });
+}
+
 require('dotenv').config();
 
 const secretFinder = new SecretsManagerInternal(
@@ -79,6 +100,7 @@ if (process.env.NODE_ENV == 'local'){
 }
 
 export const handler: Handler = async (event: any, context: Context) => {
+    listAllFiles();
     const server = await bootstrap();
     return serverlessExpress.proxy(server, event, context, 'PROMISE').promise;
 };
