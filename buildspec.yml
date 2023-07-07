@@ -21,7 +21,7 @@ phases:
   post_build:
     commands:
       - echo Remove scripts from code
-      - rm -rf scripts
+      - rm -rf scripts node_modules src test .git
       - echo Creating package of code
       - zip -r package.zip .
       - echo Updating function code in AWS Lambda...
