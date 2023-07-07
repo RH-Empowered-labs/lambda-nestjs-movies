@@ -28,6 +28,6 @@ aws s3 cp package-$randomCodeVersion.zip s3://movies-lambdas-code/movies/package
 # Get Lambda Function name
 echo Updating function code in AWS Lambda...
 
-aws lambda update-function-code --function-name $FUNCTION_NAME --s3-bucket movies-lambdas-code --s3-key movies/package-$randomCodeVersion.zip
+aws lambda update-function-code --function-name $FUNCTION_NAME --s3-bucket movies-lambdas-code --s3-key movies/package-$randomCodeVersion.zip >/dev/null
 
 rm -rf package-$randomCodeVersion.zip

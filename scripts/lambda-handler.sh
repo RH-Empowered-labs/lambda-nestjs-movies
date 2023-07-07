@@ -15,10 +15,10 @@ HANDLER=$(echo $LAMBDA_CONFIG | jq -r '.Handler')
 
 echo "El manejador de la función $FUNCTION_NAME es: $HANDLER"
 
-# Verifica si el manejador es diferente de main.handler
-if [ "$HANDLER" != "dist/lambda.handler" ]; then
+# Verifica si el manejador es diferente de lambda.handler
+if [ "$HANDLER" != "dist/main.handler" ]; then
   echo "Actualizando el manejador de la función a main.handler..."
   # Actualiza la configuración del manejador de la función
-  aws lambda update-function-configuration --function-name $FUNCTION_NAME --handler "dist/lambda.handler" >/dev/null
+  aws lambda update-function-configuration --function-name $FUNCTION_NAME --handler "dist/main.handler" >/dev/null
   echo "Se ha actualizado el manejador de la función $FUNCTION_NAME a main.handler"
 fi
