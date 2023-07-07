@@ -5,11 +5,24 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm install -g serverless
       - npm install
+  pre_build:
+    commands:
+      - echo Configure AWS CLI...
+      - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      - aws configure set default.region $AWS_DEFAULT_REGION
+      - echo Verify and update handler
+      - ./scripts/lambda-handler.sh
   build:
     commands:
-      - serverless package
+      - npm run build
   post_build:
     commands:
-      - serverless deploy --stage prod
+      - echo Remove scripts from code
+      - rm -rf scripts
+      - echo Creating package of code
+      - zip -r package.zip .
+      - echo Updating function code in AWS Lambda...
+      - FUNCTION_NAME=$(aws ssm get-parameter --name "/lambda/MoviesFunctionArn" --query "Parameter.Value" --output text | awk -F'[:/]' '{print $NF}')
+      - aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://package.zip
