@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm install --production
+      - npm install
   pre_build:
     commands:
       - echo Configure AWS CLI...
