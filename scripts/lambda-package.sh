@@ -42,6 +42,8 @@ mv package*.json nodejs-layer/
 echo Creating package of code
 zip -r -9 package-$randomCodeVersion.zip nodejs-layer > /dev/null
 
+ls -alt
+
 mv dist nodejs-layer/
 
 # Upload to S3
