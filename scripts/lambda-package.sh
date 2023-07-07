@@ -13,7 +13,7 @@ aws s3 cp node_modules.zip s3://movies-lambdas-code/layers/node_modules-$randomC
 
 # Creating layer
 LAYER_ARN=$(aws lambda publish-layer-version --layer-name movies_node_modules --content S3Bucket=movies-lambdas-code,S3Key=layers/node_modules-$randomCodeVersion.zip --compatible-runtimes nodejs18.x | jq -r '.LayerVersionArn')
-aws lambda update-function-configuration --function-name FUNCTION_NAME --layers LAYER_ARN
+aws lambda update-function-configuration --function-name $FUNCTION_NAME --layers $LAYER_ARN
 
 rm -rf node_modules
 
